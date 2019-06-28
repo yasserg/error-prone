@@ -19,6 +19,7 @@ package com.google.errorprone;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultiset;
 import com.google.errorprone.BugPattern.SeverityLevel;
@@ -574,6 +575,10 @@ public class VisitorState {
    * be used if a fix is already going to be emitted.
    */
   public List<ErrorProneToken> getOffsetTokens(int start, int end) {
+    if ((start < 0) || (start > end)) {
+      // This has to be generated-code. Return empty.
+      return ImmutableList.of();
+    }
     return ErrorProneTokens.getTokens(
         getSourceCode().subSequence(start, end).toString(), start, context);
   }
