@@ -16,8 +16,6 @@
 
 package com.google.errorprone.fixes;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Range;
 
@@ -34,12 +32,13 @@ public abstract class Replacement {
    * @param replaceWith the replacement text
    */
   public static Replacement create(int startPosition, int endPosition, String replaceWith) {
-    checkArgument(
-        startPosition >= 0 && startPosition <= endPosition,
-        "invalid replacement: [%s, %s) (%s)",
-        startPosition,
-        endPosition,
-        replaceWith);
+    if (startPosition < 0 || startPosition > endPosition) {
+      throw new InvalidReplacementPositionException(String.format(
+              "invalid replacement: [%s, %s) (%s)",
+              startPosition,
+              endPosition,
+              replaceWith));
+    }
     return new AutoValue_Replacement(Range.closedOpen(startPosition, endPosition), replaceWith);
   }
 
@@ -63,4 +62,11 @@ public abstract class Replacement {
 
   /** The source text to appear in the output. */
   public abstract String replaceWith();
+
+  public static class InvalidReplacementPositionException extends IllegalArgumentException {
+    InvalidReplacementPositionException(String message) {
+      super(message);
+    }
+  }
+
 }
