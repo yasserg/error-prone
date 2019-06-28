@@ -21,6 +21,8 @@ import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.google.errorprone.BugPattern.SeverityLevel.WARNING;
 import static com.google.errorprone.matchers.Description.NO_MATCH;
 
+import java.util.regex.Pattern;
+
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import com.google.errorprone.BugPattern;
@@ -31,7 +33,6 @@ import com.google.errorprone.util.Reachability;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.SwitchTree;
 import com.sun.tools.javac.tree.JCTree;
-import java.util.regex.Pattern;
 
 /** A {@link BugChecker}; see the associated {@link BugPattern} annotation for details. */
 @BugPattern(
@@ -61,10 +62,16 @@ public class FallThrough extends BugChecker implements SwitchTreeMatcher {
       // reported an error if that statement wasn't reachable, and the answer is
       // independent of any preceding statements.
       boolean completes = Reachability.canCompleteNormally(getLast(caseTree.stats));
+      int startPos = caseEndPosition(state, caseTree);
+      int endPos = next.getStartPosition();
+      if ((startPos < 0) || (startPos > endPos)) {
+        // This has to be generated-code. Ignore it.
+        break;
+      }
       String comments =
           state
               .getSourceCode()
-              .subSequence(caseEndPosition(state, caseTree), next.getStartPosition())
+              .subSequence(startPos, endPos)
               .toString()
               .trim();
       if (completes && !FALL_THROUGH_PATTERN.matcher(comments).find()) {
