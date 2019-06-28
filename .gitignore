@@ -13,6 +13,7 @@
 .idea/ant.xml
 .idea/dataSources.local.xml
 .idea/dataSources.ids
+.idea/codeStyles/
 .idea/codeStyleSettings.xml
 .idea/compiler.xml
 .idea/encodings.xml
