@@ -127,6 +127,8 @@ public final class UnusedVariable extends BugChecker implements CompilationUnitT
    */
   private static final ImmutableSet<String> EXEMPTING_VARIABLE_ANNOTATIONS =
       ImmutableSet.of(
+          "com.fasterxml.jackson.annotation.JsonProperty",
+          "com.fasterxml.jackson.annotation.JsonUnwrapped",
           "javax.persistence.Basic",
           "javax.persistence.Column",
           "javax.persistence.Id",
